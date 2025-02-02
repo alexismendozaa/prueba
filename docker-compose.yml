@@ -37,11 +37,7 @@ services:
     env_file:
       - ./comment-service/.env
     environment:
-      - DB_HOST=${DB_HOST_COMMENT}
-      - DB_PORT=${DB_PORT_COMMENT}
-      - DB_USER=${DB_USER_COMMENT}
-      - DB_PASSWORD=${DB_PASSWORD_COMMENT}
-      - DB_NAME=${DB_NAME_COMMENT}
+      - MONGO_URI=${MONGO_URI_COMMENT}
       - PORT=${PORT_COMMENT}
 
   gateway-service:
@@ -51,11 +47,6 @@ services:
     env_file:
       - ./gateway-service/.env
     environment:
-      - DB_HOST=${DB_HOST_GATEWAY}
-      - DB_PORT=${DB_PORT_GATEWAY}
-      - DB_USER=${DB_USER_GATEWAY}
-      - DB_PASSWORD=${DB_PASSWORD_GATEWAY}
-      - DB_NAME=${DB_NAME_GATEWAY}
       - PORT=${PORT_GATEWAY}
 
   recipe-service:
@@ -65,9 +56,5 @@ services:
     env_file:
       - ./recipe-service/.env
     environment:
-      - DB_HOST=${DB_HOST_RECIPE}
-      - DB_PORT=${DB_PORT_RECIPE}
-      - DB_USER=${DB_USER_RECIPE}
-      - DB_PASSWORD=${DB_PASSWORD_RECIPE}
-      - DB_NAME=${DB_NAME_RECIPE}
+      - MONGO_URI=${MONGO_URI_RECIPE}
       - PORT=${PORT_RECIPE}
