@@ -7,15 +7,14 @@ services:
       - "4000:4000"
     env_file:
       - ./auth-service/.env
-    volumes:
-      - ./auth-service/node_modules:/app/node_modules  # Persistir node_modules
-      - ./auth-service:/app  # Persistir el código fuente
     environment:
-      - DB_HOST=your-auth-service-rds-endpoint.amazonaws.com
-      - DB_PORT=5432
-      - DB_USER=alexis
-      - DB_PASSWORD=your_password
-      - DB_NAME=your_auth_database_name
+      - DB_HOST=${DB_HOST_AUTH}
+      - DB_PORT=${DB_PORT_AUTH}
+      - DB_USER=${DB_USER_AUTH}
+      - DB_PASSWORD=${DB_PASSWORD_AUTH}
+      - DB_NAME=${DB_NAME_AUTH}
+      - JWT_SECRET=${JWT_SECRET}
+      - PORT=${PORT_AUTH}
 
   user-service:
     build: ./user-service
@@ -23,54 +22,52 @@ services:
       - "4001:4001"
     env_file:
       - ./user-service/.env
-    volumes:
-      - ./user-service/node_modules:/app/node_modules  # Persistir node_modules
-      - ./user-service:/app  # Persistir el código fuente
     environment:
-      - DB_HOST=your-user-service-rds-endpoint.amazonaws.com
-      - DB_PORT=5432
-      - DB_USER=alexis
-      - DB_PASSWORD=your_password
-      - DB_NAME=your_user_database_name
-
-  recipe-service:
-    build: ./recipe-service
-    ports:
-      - "4002:4002"
-    env_file:
-      - ./recipe-service/.env
-    volumes:
-      - ./recipe-service/node_modules:/app/node_modules  # Persistir node_modules
-      - ./recipe-service:/app  # Persistir el código fuente
-    environment:
-      - MONGO_HOST=your-ec2-ip-address
-      - MONGO_PORT=27017
-      - MONGO_DB=recipe_database_name
+      - DB_HOST=${DB_HOST_USER}
+      - DB_PORT=${DB_PORT_USER}
+      - DB_USER=${DB_USER_USER}
+      - DB_PASSWORD=${DB_PASSWORD_USER}
+      - DB_NAME=${DB_NAME_USER}
+      - PORT=${PORT_USER}
 
   comment-service:
     build: ./comment-service
     ports:
-      - "4003:4003"
+      - "4002:4002"
     env_file:
       - ./comment-service/.env
-    volumes:
-      - ./comment-service/node_modules:/app/node_modules  # Persistir node_modules
-      - ./comment-service:/app  # Persistir el código fuente
     environment:
-      - MONGO_HOST=your-ec2-ip-address
-      - MONGO_PORT=27017
-      - MONGO_DB=comment_database_name
+      - DB_HOST=${DB_HOST_COMMENT}
+      - DB_PORT=${DB_PORT_COMMENT}
+      - DB_USER=${DB_USER_COMMENT}
+      - DB_PASSWORD=${DB_PASSWORD_COMMENT}
+      - DB_NAME=${DB_NAME_COMMENT}
+      - PORT=${PORT_COMMENT}
 
   gateway-service:
     build: ./gateway-service
     ports:
-      - "8080:8080"
+      - "4003:4003"
     env_file:
       - ./gateway-service/.env
-    volumes:
-      - ./gateway-service/node_modules:/app/node_modules  # Persistir node_modules
-      - ./gateway-service:/app  # Persistir el código fuente
+    environment:
+      - DB_HOST=${DB_HOST_GATEWAY}
+      - DB_PORT=${DB_PORT_GATEWAY}
+      - DB_USER=${DB_USER_GATEWAY}
+      - DB_PASSWORD=${DB_PASSWORD_GATEWAY}
+      - DB_NAME=${DB_NAME_GATEWAY}
+      - PORT=${PORT_GATEWAY}
 
-# Volúmenes persistentes
-volumes:
-  pgdata:  # Volumen para la base de datos PostgreSQL
+  recipe-service:
+    build: ./recipe-service
+    ports:
+      - "4004:4004"
+    env_file:
+      - ./recipe-service/.env
+    environment:
+      - DB_HOST=${DB_HOST_RECIPE}
+      - DB_PORT=${DB_PORT_RECIPE}
+      - DB_USER=${DB_USER_RECIPE}
+      - DB_PASSWORD=${DB_PASSWORD_RECIPE}
+      - DB_NAME=${DB_NAME_RECIPE}
+      - PORT=${PORT_RECIPE}
