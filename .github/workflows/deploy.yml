@@ -1,38 +1,26 @@
-name: Deploy to EC2
+name: Deploy to EC2 using SCP
 
 on:
   push:
     branches:
-      - main
+      - main  # Puedes cambiar esta rama a la que prefieras
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v2  # Este paso descarga el código fuente del repositorio.
 
-      - name: Deploy to EC2 using SCP
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          source: "."
-          target: "~/DelisHub"
-
-      - name: Connect to EC2 and deploy
-        uses: appleboy/ssh-action@v0.1.7
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            mkdir -p ~/.ssh
-            echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
-            chmod 600 ~/.ssh/id_rsa
-            ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
-              cd ~/DelisHub
-              chmod +x deploy.sh
-              ./deploy.sh
-            EOF
+    - name: Deploy to EC2 using SCP
+      uses: appleboy/scp-action@v0.1.4  # Usa la acción SCP para transferir archivos
+      with:
+        host: ${{ secrets.INPUT_HOST }}  # IP pública de la instancia EC2 (configurado en los secretos)
+        username: ${{ secrets.INPUT_USERNAME }}  # Nombre de usuario para EC2 (ec2-user, ubuntu, etc.)
+        key: ${{ secrets.INPUT_PRIVATE_KEY }}  # La clave privada SSH almacenada en los secretos
+        port: ${{ secrets.INPUT_PORT }}  # El puerto SSH (por defecto 22)
+        target: ${{ secrets.INPUT_TARGET }}  # El directorio de destino en EC2
+        source: ./  # El directorio o archivos que se copiarán desde tu repositorio. Esto copiará todo el repositorio.
+        rm: true  # Si deseas que los archivos se eliminen en el destino antes de la copia (opcional)
+        strip_components: 1  # Esto asegura que el directorio raíz se respete al hacer la transferencia (opcional)
