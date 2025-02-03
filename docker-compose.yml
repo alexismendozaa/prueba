@@ -12,12 +12,10 @@ services:
       - ./auth-service:/app  # Persistir el código fuente
     environment:
       - DB_HOST=auth.ci8p78npdh7f.us-east-1.rds.amazonaws.com
-      - DB_PORT=${DB_PORT_AUTH}
-      - DB_USER=${DB_USER_AUTH}
-      - DB_PASSWORD=${DB_PASSWORD_AUTH}
-      - DB_NAME=${DB_NAME_AUTH}
-      - JWT_SECRET=${JWT_SECRET}
-      - PORT=${PORT_AUTH}
+      - DB_PORT=5432
+      - DB_USER=alexis
+      - DB_PASSWORD=admin123
+      - DB_NAME=postgres
 
   user-service:
     build: ./user-service
@@ -30,26 +28,38 @@ services:
       - ./user-service:/app  # Persistir el código fuente
     environment:
       - DB_HOST=user.ci8p78npdh7f.us-east-1.rds.amazonaws.com
-      - DB_PORT=${DB_PORT_USER}
-      - DB_USER=${DB_USER_USER}
-      - DB_PASSWORD=${DB_PASSWORD_USER}
-      - DB_NAME=${DB_NAME_USER}
-      - PORT=${PORT_USER}
+      - DB_PORT=5432
+      - DB_USER=alexis
+      - DB_PASSWORD=admin123
+      - DB_NAME=postgres
+
+  recipe-service:
+    build: ./recipe-service
+    ports:
+      - "4002:4002"
+    env_file:
+      - ./recipe-service/.env
+    volumes:
+      - ./recipe-service/node_modules:/app/node_modules  # Persistir node_modules
+      - ./recipe-service:/app  # Persistir el código fuente
+    environment:
+      - MONGO_HOST=mongodb
+      - MONGO_PORT=27017
+      - MONGO_DB=recipedb
 
   comment-service:
     build: ./comment-service
     ports:
-      - "4002:4002"
+      - "4003:4003"
     env_file:
       - ./comment-service/.env
     volumes:
       - ./comment-service/node_modules:/app/node_modules  # Persistir node_modules
       - ./comment-service:/app  # Persistir el código fuente
     environment:
-      - MONGO_URI=mongodb://mongo:27017/commentdb  # Conexión a MongoDB
-      - PORT=${PORT_COMMENT}
-    depends_on:
-      - mongo  # El contenedor de comment-service depende de mongo
+      - MONGO_HOST=mongodb
+      - MONGO_PORT=27017
+      - MONGO_DB=commentdb
 
   gateway-service:
     build: ./gateway-service
@@ -60,32 +70,14 @@ services:
     volumes:
       - ./gateway-service/node_modules:/app/node_modules  # Persistir node_modules
       - ./gateway-service:/app  # Persistir el código fuente
-    environment:
-      - PORT=${PORT_GATEWAY}
 
-  recipe-service:
-    build: ./recipe-service
+  mongodb:
+    image: mongo:latest
     ports:
-      - "4003:4003"
-    env_file:
-      - ./recipe-service/.env
+      - "27017:27017"
     volumes:
-      - ./recipe-service/node_modules:/app/node_modules  # Persistir node_modules
-      - ./recipe-service:/app  # Persistir el código fuente
-    environment:
-      - MONGO_URI=mongodb://mongo:27017/recipedb  # Conexión a MongoDB
-      - PORT=${PORT_RECIPE}
-    depends_on:
-      - mongo  # El contenedor de recipe-service depende de mongo
+      - mongodb_data:/data/db
 
-  mongo:
-    image: mongo:latest  # Usando la imagen oficial de MongoDB
-    container_name: mongo
-    restart: always
-    ports:
-      - "27017:27017"  # Exponiendo el puerto 27017 de MongoDB
-    volumes:
-      - mongo-data:/data/db  # Volumen para persistir los datos de MongoDB
-
+# Volúmenes persistentes
 volumes:
-  mongo-data:  # Volumen persistente para los datos de MongoDB
+  mongodb_data:
