@@ -1,15 +1,8 @@
-version: '3.8'
-
 services:
   auth-service:
-    build: ./auth-service
+    image: yourusername/auth-service:latest
     ports:
       - "4000:4000"
-    env_file:
-      - ./auth-service/.env
-    volumes:
-      - ./auth-service/node_modules:/app/node_modules  # Persistir node_modules
-      - ./auth-service:/app  # Persistir el código fuente
     environment:
       - DB_HOST=auth.ci8p78npdh7f.us-east-1.rds.amazonaws.com
       - DB_PORT=5432
@@ -18,14 +11,9 @@ services:
       - DB_NAME=postgres
 
   user-service:
-    build: ./user-service
+    image: alexismendozaa/user-service:latest
     ports:
       - "4001:4001"
-    env_file:
-      - ./user-service/.env
-    volumes:
-      - ./user-service/node_modules:/app/node_modules  # Persistir node_modules
-      - ./user-service:/app  # Persistir el código fuente
     environment:
       - DB_HOST=user.ci8p78npdh7f.us-east-1.rds.amazonaws.com
       - DB_PORT=5432
@@ -34,50 +22,24 @@ services:
       - DB_NAME=postgres
 
   recipe-service:
-    build: ./recipe-service
+    image: alexismendozaa/recipe-service:latest
     ports:
       - "4002:4002"
-    env_file:
-      - ./recipe-service/.env
-    volumes:
-      - ./recipe-service/node_modules:/app/node_modules  # Persistir node_modules
-      - ./recipe-service:/app  # Persistir el código fuente
     environment:
       - MONGO_HOST=mongodb
       - MONGO_PORT=27017
       - MONGO_DB=recipedb
 
   comment-service:
-    build: ./comment-service
+    image: alexismendozaa/comment-service:latest
     ports:
       - "4003:4003"
-    env_file:
-      - ./comment-service/.env
-    volumes:
-      - ./comment-service/node_modules:/app/node_modules  # Persistir node_modules
-      - ./comment-service:/app  # Persistir el código fuente
     environment:
       - MONGO_HOST=mongodb
       - MONGO_PORT=27017
       - MONGO_DB=commentdb
 
   gateway-service:
-    build: ./gateway-service
+    image: alexismendozaa/gateway-service:latest
     ports:
       - "8080:8080"
-    env_file:
-      - ./gateway-service/.env
-    volumes:
-      - ./gateway-service/node_modules:/app/node_modules  # Persistir node_modules
-      - ./gateway-service:/app  # Persistir el código fuente
-
-  mongodb:
-    image: mongo:latest
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongodb_data:/data/db
-
-# Volúmenes persistentes
-volumes:
-  mongodb_data:
